@@ -6,6 +6,7 @@
 // operation, and silently merging someone's library on import would be the wrong default.
 
 import { join } from 'node:path'
+import { regroupAlbums } from '../library/albums'
 import { createUpserter, type Db, type TrackCandidate } from '../library/identity'
 import type { GmbrcData } from './gmbrc'
 
@@ -158,6 +159,7 @@ export function importGmbrc(db: Db, data: GmbrcData, opts: ImportOptions = {}): 
       }
     }
 
+    regroupAlbums(db)
     db.exec('COMMIT')
   } catch (err) {
     db.exec('ROLLBACK')

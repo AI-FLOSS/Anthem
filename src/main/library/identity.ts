@@ -7,6 +7,7 @@
 // recording is a separate, reviewable operation — see DESIGN-SPEC §9.2.
 
 import { field } from '@shared/fields'
+import { albumMatchKey, compilationKey } from './albums'
 
 type Statement = {
   run: (...args: never[]) => unknown
@@ -46,6 +47,7 @@ export interface TrackCandidate {
   compilation?: boolean
   bpm?: number | null
   mbRecordingId?: string | null
+  mbReleaseId?: string | null
   acoustid?: string | null
 
   rating?: number | null
@@ -103,11 +105,6 @@ export function identityKey(t: TrackCandidate): string {
   return ['t', artist, title, norm(t.album)].join(KEY_SEP)
 }
 
-export function albumMatchKey(t: TrackCandidate): string | null {
-  if (!t.album) return null
-  return ['a', norm(t.albumArtist ?? t.artist), norm(t.album), t.year ?? ''].join(KEY_SEP)
-}
-
 /** Higher is preferred when several sources back one track. */
 export function qualityRank(m: MediaCandidate): number {
   const lossless = new Set(['flac', 'alac', 'wav', 'aiff', 'wavpack', 'ape'])
@@ -130,8 +127,11 @@ class Upserter {
         'SELECT id FROM tracks WHERE mb_recording_id = ? LIMIT 1'),
 
       insertAlbum: db.prepare(
-        'INSERT OR IGNORE INTO albums (match_key, name, year, added) VALUES (?, ?, ?, ?)'),
+        'INSERT OR IGNORE INTO albums (match_key, name, year, mb_release_id, is_compilation, added) ' +
+        'VALUES (?, ?, ?, ?, ?, ?)'),
       selectAlbum: db.prepare('SELECT id FROM albums WHERE match_key = ?'),
+      pinnedAlbumOf: db.prepare(
+        'SELECT a.id FROM tracks t JOIN albums a ON a.id = t.album_id WHERE t.id = ? AND a.pinned = 1'),
 
       insertTrack: db.prepare(`
         INSERT INTO tracks (title, album_id, year, track_number, disc_number, length_ms,
@@ -190,11 +190,25 @@ class Upserter {
     return id
   }
 
-  private albumId(t: TrackCandidate, now: number): number | null {
-    const key = albumMatchKey(t)
+  private albumId(t: TrackCandidate, uri: string, trackId: number | null, now: number): number | null {
+    // An album arranged by hand keeps its tracks whatever their tags now say.
+    if (trackId !== null) {
+      const current = this.s.pinnedAlbumOf!.get(trackId as never) as { id: number } | undefined
+      if (current) return current.id
+    }
+
+    const key = albumMatchKey(t, uri)
     if (key === null) return null
 
-    this.s.insertAlbum!.run(key as never, t.album as never, (t.year ?? null) as never, now as never)
+    // Once a regroup has filed this album as a compilation, later tracks without an album artist join it.
+    if (!t.albumArtist && !t.mbReleaseId) {
+      const comp = this.s.selectAlbum!.get(compilationKey(t, uri) as never) as { id: number } | undefined
+      if (comp) return comp.id
+    }
+
+    this.s.insertAlbum!.run(
+      key as never, t.album as never, (t.year ?? null) as never, (t.mbReleaseId ?? null) as never,
+      (key.startsWith('c') ? 1 : 0) as never, now as never)
     return (this.s.selectAlbum!.get(key as never) as { id: number }).id
   }
 
@@ -254,7 +268,7 @@ class Upserter {
     }
 
     const key = identityKey(track)
-    const album = this.albumId(track, now)
+    const album = this.albumId(track, media.uri, trackId, now)
     const created = trackId === null
 
     if (created) {

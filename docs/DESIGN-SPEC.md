@@ -1703,9 +1703,16 @@ The `pinned` flag is what de-risks the whole decision: a user merge or split wri
 the rescan never overrides it. That means the heuristic can be **changed after 1.0** without
 destroying user intent — which turns an irreversible schema decision into a tunable one.
 
-**Still open:** whether a remaster is the same album as the original by default. Proposal: **no** —
-different `year` means different album, with a one-click "merge these" in the album view. Splitting
-is a smaller annoyance than silently merging two masterings and computing one album gain across both.
+**A remaster is a different album by default** — different `year` means different album, with a
+one-click "merge these" in the album view. Splitting is a smaller annoyance than silently merging two
+masterings and computing one album gain across both.
+
+**Implemented** in `library/albums.ts`. Compilation detection needs every track of an album in view,
+so it runs as a regroup pass after each import and scan rather than per file; a track tagged as a
+compilation joins the compilation album at once. The same pass deletes album rows no track points
+at, except pinned ones and any an undoable merge would restore. Both the importer and the scanner
+key on the first artist in the tag with featured guests removed, so reading `A; B` whole or split
+lands on the same album.
 
 ### 17.2 CUE sheets — resolved by the entity model
 
