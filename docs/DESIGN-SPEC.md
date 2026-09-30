@@ -346,8 +346,10 @@ with different mechanisms:
 
 **The audio content hash** is computed over the audio stream with every metadata region excluded, so
 retagging a file never changes its hash. FLAC gets this free — its STREAMINFO block already carries
-an MD5 of the decoded audio. Tagged container formats get their frame region hashed with the ID3v2
-header, ID3v1 trailer and APE tag skipped. Anything else falls back to a whole-file hash, which is
+an MD5 of the decoded audio. MP4 gets its `mdat` payloads hashed, since tags live in `moov`. Ogg
+(Vorbis, Opus, Speex) gets its packets hashed with the comment packet left out — packets rather than
+pages, because a retag repaginates the stream. ID3/APE-tagged formats get their frame region hashed
+with the ID3v2 header, ID3v1 trailer and APE tag skipped. Anything else falls back to a whole-file hash, which is
 still stable under moves but not under retagging; the algorithm used is recorded per media row in
 `audio_hash_algo` so the weaker cases are visible rather than silently assumed.
 

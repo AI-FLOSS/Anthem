@@ -45,6 +45,8 @@ const identityExplanation = (source: string): string => ({
 
 const hashExplanation = (algo: string | null): string => ({
   'flac-streaminfo-md5': "FLAC's own checksum of the decoded audio. Exact, and free to read.",
+  'sha256-mdat': 'Hashed over the MP4 audio data with the tag atoms excluded, so retagging does not change it.',
+  'sha256-ogg-packets': 'Hashed over the Ogg audio packets with the comment header excluded, so retagging does not change it.',
   'sha256-frames': 'Hashed over the audio frames with tag regions excluded, so retagging does not change it.',
   'sha256-file': 'Hashed over the whole file, so editing tags will change it. Weaker for move detection.'
 } as Record<string, string>)[algo ?? ''] ?? 'Not hashed yet; scan this folder to enable move detection.'
