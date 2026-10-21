@@ -1,6 +1,6 @@
 # X-Music
 
-[![AI readiness](https://img.shields.io/endpoint?url=https://ai-floss.github.io/badges/AI-FLOSS/Anthem.json)](https://ai-floss.github.io/guidelines/readiness/)
+[![AI readiness](https://img.shields.io/endpoint?url=https://x-tech-laboratories.github.io/badges/x-tech-laboratories/Anthem.json)](https://x-tech-laboratories.github.io/guidelines/readiness/)
 
 A desktop music player with gmusicbrowser's data model and power, a web-technology UI that users can
 re-layout and re-skin, and [Halon](https://github.com/BeatLink/Halon) as its reference theme.
@@ -146,10 +146,10 @@ primitives and no DOM access. Replacing the UI framework touches `renderer/` onl
 
 ## Contributing
 
-X-Music is an [AI-FLOSS](https://ai-floss.github.io) project, and AI-assisted contributions are
-welcome. Read [AGENTS.md](AGENTS.md) and the
-[AI policy](https://github.com/AI-FLOSS/.github/blob/main/AI_POLICY.md), and say in your pull request
-how AI was involved.
+X-Music is an [X-Tech Laboratories](https://x-tech-laboratories.github.io) project, and AI-assisted
+contributions are welcome. Read [AGENTS.md](AGENTS.md) and the
+[AI policy](https://github.com/x-tech-laboratories/.github/blob/main/AI_POLICY.md), and say in your
+pull request how AI was involved.
 
 ## Licence
 
