@@ -1,6 +1,6 @@
 // Generates themes/halon/halon.css from Halon's token document.
 //
-// Halon's tokens are the source; Anthem adds a player-specific layer derived from them, so a token
+// Halon's tokens are the source; X-Music adds a player-specific layer derived from them, so a token
 // update upstream flows through without hand-editing CSS (DESIGN-SPEC §5.4).
 
 import { readFileSync, writeFileSync } from 'node:fs'

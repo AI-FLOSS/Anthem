@@ -2,7 +2,7 @@
 //
 // The level filter is parsed here, apart from any transport, because the interesting behaviour is
 // what a malformed or partial specification does — and that deserves a test rather than a guess.
-// A bad ANTHEM_LOG must never silence logging or crash start-up; it falls back to the default.
+// A bad X_MUSIC_LOG must never silence logging or crash start-up; it falls back to the default.
 
 export type Level = 'critical' | 'error' | 'warn' | 'info' | 'debug'
 

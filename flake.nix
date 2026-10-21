@@ -1,5 +1,5 @@
 {
-  description = "Anthem — a customizable music player with a real library engine";
+  description = "X-Music — a customizable music player with a real library engine";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -25,7 +25,7 @@
       in
       {
         packages.default = pkgs.buildNpmPackage {
-          pname = "anthem";
+          pname = "x-music";
           version = (builtins.fromJSON (builtins.readFile ./package.json)).version;
           src = self;
 
@@ -51,28 +51,28 @@
             npm prune --omit=dev --ignore-scripts
             # Only the host platform's prebuild can be patched to find libstdc++.
             find node_modules/better-sqlite3/prebuilds -name "*.node" ! -name "linux-${pkgs.stdenv.hostPlatform.node.arch}.node" -delete
-            mkdir -p $out/lib/anthem
-            cp -r out package.json node_modules $out/lib/anthem/
-            makeWrapper ${electron}/bin/electron $out/bin/anthem \
-              --add-flags $out/lib/anthem \
+            mkdir -p $out/lib/x-music
+            cp -r out package.json node_modules $out/lib/x-music/
+            makeWrapper ${electron}/bin/electron $out/bin/x-music \
+              --add-flags $out/lib/x-music \
               --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.mpv ]} \
-              --set-default ANTHEM_ALLOW_WRITES 1 \
+              --set-default X_MUSIC_ALLOW_WRITES 1 \
               --unset ELECTRON_RUN_AS_NODE
             runHook postInstall
           '';
 
           desktopItems = [
             (pkgs.makeDesktopItem {
-              name = "anthem";
-              desktopName = "Anthem";
+              name = "x-music";
+              desktopName = "X-Music";
               comment = "Music player";
-              exec = "anthem %U";
+              exec = "x-music %U";
               icon = "audio-x-generic";
               categories = [ "Audio" "AudioVideo" "Player" ];
             })
           ];
 
-          meta.mainProgram = "anthem";
+          meta.mainProgram = "x-music";
         };
 
         devShells.default = pkgs.mkShell {
@@ -106,7 +106,7 @@
 
             export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath runtimeLibs}:$LD_LIBRARY_PATH"
 
-            echo "anthem dev shell · node $(node -v) · electron ${electron.version} · mpv $(mpv --version | head -1 | cut -d' ' -f2)"
+            echo "x-music dev shell · node $(node -v) · electron ${electron.version} · mpv $(mpv --version | head -1 | cut -d' ' -f2)"
           '';
         };
       });

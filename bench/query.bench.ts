@@ -12,7 +12,7 @@ import { and, or, leaf, not } from '@shared/filter'
 import { makeCorpus, FIXED_NOW } from '../test/helpers/corpus'
 import { loadCorpus } from '../test/helpers/sqlite'
 
-const SIZE = Number(process.env.ANTHEM_BENCH_SIZE ?? 50_000)
+const SIZE = Number(process.env.X_MUSIC_BENCH_SIZE ?? 50_000)
 
 const corpus = makeCorpus(SIZE, 2024)
 const db = new DatabaseSync(':memory:')

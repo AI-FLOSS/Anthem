@@ -13,7 +13,7 @@ export interface Pref<T> {
 }
 
 export function pref<T>(key: string, initial: T, validate?: Validator<T>): Pref<T> {
-  const full = `anthem.pref.${key}`
+  const full = `x-music.pref.${key}`
   const current = signal(readPref(storage(), full, initial, validate))
 
   return {

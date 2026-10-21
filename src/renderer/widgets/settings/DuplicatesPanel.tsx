@@ -110,7 +110,7 @@ export function DuplicatesPanel() {
         <header class={s.header}>
           <h2 class={s.heading}>Find duplicates</h2>
           <p class={s.lead}>
-            Anthem never merges automatically. This proposes groups with its reasoning; you decide.
+            X-Music never merges automatically. This proposes groups with its reasoning; you decide.
           </p>
         </header>
 

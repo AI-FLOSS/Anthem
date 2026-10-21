@@ -15,13 +15,13 @@ class PlayerStore {
   init(): () => void {
     void this.refresh()
 
-    const offStatus = window.anthemEvents.on('player:status', (s) => {
+    const offStatus = window.xMusicEvents.on('player:status', (s) => {
       this.status = s
       this.positionMs = s.positionMs
       this.lastTickAt = performance.now()
     })
 
-    const offPosition = window.anthemEvents.on('player:position', (p) => {
+    const offPosition = window.xMusicEvents.on('player:position', (p) => {
       this.positionMs = p.positionMs
       this.lastTickAt = performance.now()
       // Replacing status re-renders everything that reads it, so only do it when the duration moved.

@@ -1,9 +1,9 @@
-// Drives a running Anthem window over the Chrome DevTools Protocol.
-// Anthem is launched separately with --remote-debugging-port=9222; this attaches to that port.
+// Drives a running X-Music window over the Chrome DevTools Protocol.
+// X-Music is launched separately with --remote-debugging-port=9222; this attaches to that port.
 // Usage: node driver.mjs eval "<js>" | shot <file> | text [selector] | menu <rowIndex>
 import { writeFileSync } from 'node:fs'
 
-const PORT = process.env.ANTHEM_CDP_PORT ?? '9222'
+const PORT = process.env.X_MUSIC_CDP_PORT ?? '9222'
 const [mode, ...rest] = process.argv.slice(2)
 const arg = rest.join(' ')
 

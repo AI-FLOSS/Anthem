@@ -1,6 +1,6 @@
 // What plays, and what plays next.
 //
-// This owns every decision Anthem makes about playback and none of the audio: which of a track's
+// This owns every decision X-Music makes about playback and none of the audio: which of a track's
 // media to use, when a play counts as a play rather than a skip, how the queue drains against the
 // standing playlist, and what repeat and shuffle mean. The engine underneath is injected, so all of
 // it is testable without spawning a process.

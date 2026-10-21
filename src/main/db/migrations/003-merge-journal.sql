@@ -1,4 +1,4 @@
--- A merge deletes track rows, which makes it the most destructive operation in Anthem that does not
+-- A merge deletes track rows, which makes it the most destructive operation in X-Music that does not
 -- touch a file. Every merge records enough to put the library back exactly as it was, so the action
 -- is reversible rather than merely careful (DESIGN-SPEC §9.4.3).
 

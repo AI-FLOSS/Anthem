@@ -1,6 +1,6 @@
 // The playback engine boundary.
 //
-// Anthem's own logic — what plays next, when a play counts, which file of a track to use — lives in
+// X-Music's own logic — what plays next, when a play counts, which file of a track to use — lives in
 // player.ts and knows nothing about mpv. This interface is the seam, so a second backend (Web Audio,
 // or a native decoder) is a swap rather than a rewrite, and so the player can be tested against a
 // fake without spawning a process.

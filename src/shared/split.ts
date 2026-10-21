@@ -1,6 +1,6 @@
 // Split-pane sizing arithmetic.
 //
-// gmusicbrowser layouts declare sizes like HPmain(size=400) and VPRight(size=200-550); Anthem needs
+// gmusicbrowser layouts declare sizes like HPmain(size=400) and VPRight(size=200-550); X-Music needs
 // the same, but the interesting part is not the DOM — it is deciding what a drag is allowed to do
 // when panes have minimums, when a neighbour is already at its limit, and when the window resizes.
 // That logic lives here so it is testable and survives any UI-framework decision.

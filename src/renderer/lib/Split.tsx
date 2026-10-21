@@ -24,7 +24,7 @@ export function Split({
   panes: ComponentChildren[]
 }) {
   // The id is fixed configuration for the lifetime of the split.
-  const storage = useRef(`anthem.split.${id}`).current
+  const storage = useRef(`x-music.split.${id}`).current
 
   const container = useRef<HTMLDivElement>(null)
   const [sizes, setSizes] = useState<number[]>([])

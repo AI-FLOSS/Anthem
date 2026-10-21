@@ -14,7 +14,7 @@ export function Sidebar() {
 
   return (
     <nav class={s.sidebar} aria-label="Library navigation">
-      <div class={s.brand}>Anthem</div>
+      <div class={s.brand}>X-Music</div>
 
       {sections.map((section) => (
         <div key={section.title}>

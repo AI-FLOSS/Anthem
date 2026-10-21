@@ -1,4 +1,4 @@
--- Anthem initial schema.
+-- X-Music initial schema.
 --
 -- The central idea: a `track` is a logical piece of music, not a file. It survives renames, moves,
 -- format changes, retagging, and having no file at all. Anything that can actually render it — a
@@ -30,7 +30,7 @@ CREATE TABLE tracks (
   pinned            INTEGER NOT NULL DEFAULT 0,
                     -- 1 = a human merged/split this; automated passes must never override it
 
-  -- Statistics are Anthem's, never guessed from tags, and belong to the track, not the file.
+  -- Statistics are X-Music's, never guessed from tags, and belong to the track, not the file.
   rating            INTEGER,          -- 0..100; NULL means unrated, which is not 0
   play_count        INTEGER NOT NULL DEFAULT 0,
   skip_count        INTEGER NOT NULL DEFAULT 0,

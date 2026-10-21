@@ -1,16 +1,16 @@
 // The main process's logger.
 //
 // Configured entirely by environment, so a user reporting a problem can turn on detail without a
-// rebuild: ANTHEM_LOG=debug, or ANTHEM_LOG=warn,play:debug to make one area noisy while the rest
-// stays quiet. ANTHEM_LOG_FILE additionally appends to a file.
+// rebuild: X_MUSIC_LOG=debug, or X_MUSIC_LOG=warn,play:debug to make one area noisy while the rest
+// stays quiet. X_MUSIC_LOG_FILE additionally appends to a file.
 
 import { appendFileSync } from 'node:fs'
 import {
   createLogger, formatRecord, parseLevelSpec, type Level, type Logger, type LogRecord
 } from '@shared/log'
 
-const spec = parseLevelSpec(process.env.ANTHEM_LOG)
-const file = process.env.ANTHEM_LOG_FILE
+const spec = parseLevelSpec(process.env.X_MUSIC_LOG)
+const file = process.env.X_MUSIC_LOG_FILE
 
 const toConsole = (record: LogRecord): void => {
   const line = formatRecord(record)

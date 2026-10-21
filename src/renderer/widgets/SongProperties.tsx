@@ -1,4 +1,4 @@
-// Everything Anthem knows about one track. This is the first place the entity model is visible:
+// Everything X-Music knows about one track. This is the first place the entity model is visible:
 // a track is a piece of music, and the files are sources hanging off it (DESIGN-SPEC §6.5).
 
 import { Fragment } from 'preact'
@@ -237,7 +237,7 @@ export function SongProperties({ trackId, onclose }: { trackId: number; onclose?
       <section class={s.section}>
         <h2 class={s.h2}>Raw tags, per source</h2>
         <p class={s.hint}>
-          What each file actually carries. Two files backing one track can disagree, and Anthem stores
+          What each file actually carries. Two files backing one track can disagree, and X-Music stores
           both rather than losing the disagreement.
         </p>
 

@@ -1,8 +1,8 @@
-// Read-only mode. Anthem points at a music library that took years to assemble and that the user
+// Read-only mode. X-Music points at a music library that took years to assemble and that the user
 // cannot easily reconstruct, so the default posture is that it never writes to it.
 //
 // This is enforced as a chokepoint rather than as a convention: every filesystem-mutating operation
-// must pass through assertWritable(), and the only paths ever writable are Anthem's own data
+// must pass through assertWritable(), and the only paths ever writable are X-Music's own data
 // directory and whatever the user has explicitly unlocked. Tag writing, file organizing and
 // deletion are all downstream of this function.
 
@@ -13,20 +13,20 @@ export type WriteOperation =
 
 export class ReadOnlyError extends Error {
   constructor(readonly operation: WriteOperation, readonly path: string) {
-    super(`refused ${operation} on ${path}: Anthem is in read-only mode`)
+    super(`refused ${operation} on ${path}: X-Music is in read-only mode`)
     this.name = 'ReadOnlyError'
   }
 }
 
 interface SafetyState {
   readOnly: boolean
-  /** Paths Anthem may always write to, regardless of mode: its own database and caches. */
+  /** Paths X-Music may always write to, regardless of mode: its own database and caches. */
   ownDataDirs: string[]
 }
 
 const state: SafetyState = {
   // Read-only unless explicitly disabled. A missing or malformed env var keeps protection on.
-  readOnly: process.env.ANTHEM_ALLOW_WRITES !== '1',
+  readOnly: process.env.X_MUSIC_ALLOW_WRITES !== '1',
   ownDataDirs: []
 }
 
@@ -41,8 +41,8 @@ export const isReadOnly = (): boolean => state.readOnly
  * must not have pinned the mode. There is no corresponding "turn it off quietly" path.
  */
 export function setReadOnly(value: boolean): void {
-  if (!value && process.env.ANTHEM_FORCE_READ_ONLY === '1') {
-    throw new Error('read-only mode is pinned by ANTHEM_FORCE_READ_ONLY')
+  if (!value && process.env.X_MUSIC_FORCE_READ_ONLY === '1') {
+    throw new Error('read-only mode is pinned by X_MUSIC_FORCE_READ_ONLY')
   }
   state.readOnly = value
 }
@@ -53,7 +53,7 @@ function isOwnData(path: string): boolean {
 }
 
 /**
- * The chokepoint. Throws unless the write is permitted. Anthem's own data directory is always
+ * The chokepoint. Throws unless the write is permitted. X-Music's own data directory is always
  * writable — otherwise the library database itself could not be maintained.
  */
 export function assertWritable(operation: WriteOperation, path: string): void {
@@ -77,14 +77,14 @@ export interface SafetyStatus {
 }
 
 export function safetyStatus(): SafetyStatus {
-  const pinned = process.env.ANTHEM_FORCE_READ_ONLY === '1'
+  const pinned = process.env.X_MUSIC_FORCE_READ_ONLY === '1'
   return {
     readOnly: state.readOnly,
     pinned,
     reason: pinned
-      ? 'Pinned read-only by ANTHEM_FORCE_READ_ONLY'
+      ? 'Pinned read-only by X_MUSIC_FORCE_READ_ONLY'
       : state.readOnly
-        ? 'Read-only: Anthem will not modify any file in your library'
+        ? 'Read-only: X-Music will not modify any file in your library'
         : 'Writes enabled'
   }
 }

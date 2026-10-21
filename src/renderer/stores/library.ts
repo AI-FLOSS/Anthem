@@ -17,9 +17,9 @@ import { ipc } from '../lib/ipc'
 const storage = (): Storage | undefined =>
   typeof localStorage === 'undefined' ? undefined : localStorage
 
-const KEY_SORT = 'anthem.pref.library.sort'
-const KEY_PANES = 'anthem.pref.library.panes'
-const KEY_SEARCH = 'anthem.pref.library.search'
+const KEY_SORT = 'x-music.pref.library.sort'
+const KEY_PANES = 'x-music.pref.library.panes'
+const KEY_SEARCH = 'x-music.pref.library.search'
 
 const PAGE = 500
 

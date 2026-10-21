@@ -21,7 +21,7 @@ const MIGRATIONS: readonly { version: number; sql: string }[] = [
 ]
 
 export function libraryPath(): string {
-  return process.env.ANTHEM_DB ?? join(app.getPath('userData'), 'library.db')
+  return process.env.X_MUSIC_DB ?? join(app.getPath('userData'), 'library.db')
 }
 
 function applyPragmas(db: DB): void {

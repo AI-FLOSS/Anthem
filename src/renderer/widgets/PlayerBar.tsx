@@ -23,7 +23,7 @@ export function PlayerBar() {
 
       <div class={s.now}>
         <div class={s.title}>Nothing playing</div>
-        <div class={s.sub}>Anthem</div>
+        <div class={s.sub}>X-Music</div>
       </div>
 
       <div class={s.seek}>
