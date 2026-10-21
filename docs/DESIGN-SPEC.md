@@ -1,4 +1,4 @@
-# Anthem — Design Specification
+# X-Music — Design Specification
 
 **Status:** v0.3 · skeleton implemented · see README.md for what runs today
 **One line:** a desktop music player with gmusicbrowser's data model and power, a web-technology UI
@@ -6,16 +6,16 @@ that users can re-layout and re-skin, and Halon as its reference theme.
 
 ---
 
-## 1. What Anthem is
+## 1. What X-Music is
 
 gmusicbrowser is the most capable Linux music library manager ever written — arbitrary user-defined
 fields, a real filter algebra, smart playlists, mass tagging, and a layout system where the entire
 window is user-assembled from widgets. It is also Perl/GTK2, effectively unmaintained, and its
 customization story ends at a bespoke `.layout` file format that almost nobody learns.
 
-Anthem keeps the model and replaces the substrate:
+X-Music keeps the model and replaces the substrate:
 
-| gmusicbrowser | Anthem |
+| gmusicbrowser | X-Music |
 |---|---|
 | Perl + GTK2 | Rust core + web UI in a native shell |
 | In-memory Perl column store | SQLite (source of truth) + in-memory columnar index |
@@ -29,14 +29,14 @@ Anthem keeps the model and replaces the substrate:
 - Not a streaming client. Local files (and network mounts) only. Streaming is a plugin surface later.
 - Not a mobile app. Desktop first; the UI being web tech makes a remote-control web view cheap later,
   but it is not v1 scope.
-- Not a DJ tool, not a tag *database* (MusicBrainz Picard's job) — Anthem writes tags well but does
+- Not a DJ tool, not a tag *database* (MusicBrainz Picard's job) — X-Music writes tags well but does
   not try to out-Picard Picard on acoustic fingerprinting.
 
 ### 1.2 Success criteria
 
 1. 50,000-track library: cold start to interactive under 3 seconds; any filter, sort or group under
    100 ms. Larger libraries must degrade gracefully, not fall over (§12.1).
-2. Every gmusicbrowser filter operator has an Anthem equivalent, and an importer converts existing
+2. Every gmusicbrowser filter operator has an X-Music equivalent, and an importer converts existing
    gmusicbrowser filters and layouts.
 3. A user can move a panel, add a column, and restyle the whole app without recompiling anything.
 4. Tag edits round-trip losslessly across MP3/FLAC/Ogg/Opus/M4A/WavPack/APE.
@@ -132,16 +132,16 @@ arguments as they cross from the page's world into the preload's isolated world 
 happens *before* any preload code runs. So an argument that structured clone rejects, such as a
 Proxy, fails with "An object could not be cloned" no matter what the preload does; the flattening
 has to happen in the renderer. Every call therefore goes through `src/renderer/lib/ipc.ts`
-rather than touching `window.anthem` directly.
+rather than touching `window.xMusic` directly.
 
 The symptom is easy to misread: the handler never runs, so nothing appears in the main process log,
 which looks like a return-value problem rather than an argument one.
 
 ### 2.3.1 Logging
 
-Levels are `critical`, `error`, `warn`, `info` and `debug`, configured by `ANTHEM_LOG` — either a
+Levels are `critical`, `error`, `warn`, `info` and `debug`, configured by `X_MUSIC_LOG` — either a
 bare level, or per-scope entries such as `warn,play:debug` so one area can be made noisy while the
-rest stays quiet. `ANTHEM_LOG_FILE` additionally appends to a file.
+rest stays quiet. `X_MUSIC_LOG_FILE` additionally appends to a file.
 
 Two decisions worth recording:
 
@@ -190,7 +190,7 @@ reactive wrappers over `shared/` classes, and CSS.
 In gmusicbrowser a *field* is not a column — it is a typed descriptor carrying its own storage
 strategy, display format, filter operators, sort key, edit widget, and tag-format mappings. That's
 why adding a user field there gives you filtering, sorting, grouping, column display, and tag
-round-tripping for free. Anthem keeps this and makes it data instead of Perl.
+round-tripping for free. X-Music keeps this and makes it data instead of Perl.
 
 ```jsonc
 // fields/rating.json — a built-in field descriptor
@@ -238,7 +238,7 @@ These are many-to-many, autocompleted, colour-assignable, and filterable with se
 `rg_track_gain`, `rg_track_peak`, `rg_album_gain`, `rg_album_peak`, `r128_track_gain`,
 `r128_album_gain`, `loudness_lufs`, `dynamic_range`.
 
-**Statistics (Anthem-owned, never guessed from tags)**
+**Statistics (X-Music-owned, never guessed from tags)**
 `rating` (0–100 stored, 5 stars displayed), `play_count`, `skip_count`, `last_played`, `last_skipped`,
 `first_played`, `play_history` (timestamp list), `skip_history`, `bookmark_ms`, `love` (bool).
 
@@ -248,7 +248,7 @@ These are many-to-many, autocompleted, colour-assignable, and filterable with se
 
 **User-defined fields**
 Any number, of any type in §3.3, with an optional tag mapping. A user field with a tag mapping
-round-trips to files; without one it lives only in Anthem's database.
+round-trips to files; without one it lives only in X-Music's database.
 
 ### 3.2.1 Every field is a first-class field
 
@@ -308,7 +308,7 @@ function, edit widget, and tag serialization.
 
 ### 3.4 The entity model: a track is not a file
 
-**This is the load-bearing decision in Anthem, and it is what the database being the source of truth
+**This is the load-bearing decision in X-Music, and it is what the database being the source of truth
 actually means.**
 
 A `track` is a logical piece of music. It survives renames, moves, format changes, retagging, and
@@ -336,7 +336,7 @@ Consequences that fall out for free:
 
 ### 3.5 Two identities, deliberately separate
 
-The most common modelling mistake here is to conflate two different questions. Anthem answers them
+The most common modelling mistake here is to conflate two different questions. X-Music answers them
 with different mechanisms:
 
 | Question | Mechanism | Properties |
@@ -403,7 +403,7 @@ overwrite it.
 Two policies fall out of the sources being different:
 
 - **The importer is authoritative for statistics**; the scanner is not. A tag must never overwrite
-  Anthem's own rating or play count, so `scanRoots` passes `statistics: false`.
+  X-Music's own rating or play count, so `scanRoots` passes `statistics: false`.
 - **Multi-value fields are replaced, not appended**, or a second import doubles every genre.
 
 Play history needed a uniqueness constraint (migration 002: `UNIQUE(track_id, at, kind)`), without
@@ -510,7 +510,7 @@ Stored 0–100 (integer), `NULL` = unrated. Displayed as 5 stars, half-stars opt
 
 Interop mapping, written to files only when "sync stats to tags" is on:
 
-| Anthem | POPM (ID3v2) | FMPS_Rating | Stars |
+| X-Music | POPM (ID3v2) | FMPS_Rating | Stars |
 |---|---|---|---|
 | null | tag absent | tag absent | — |
 | 0 | 0 | 0.0 | 0 |
@@ -547,7 +547,7 @@ panes. It has exactly two node kinds.
 
 Operator set is a superset of gmusicbrowser's, so its filter strings import 1:1:
 
-| gmb | Anthem | | gmb | Anthem |
+| gmb | X-Music | | gmb | X-Music |
 |---|---|---|---|---|
 | `e` | `is` / `=` | | `h` | `top` (top N by field) |
 | `-e` | `not_is` / `≠` | | `t` | `bottom` |
@@ -556,7 +556,7 @@ Operator set is a superset of gmusicbrowser's, so its filter strings import 1:1:
 | `b` | `between` | | `c` | `contains` |
 | `-b` | `not_between` | | `defined` | `defined` |
 
-Plus Anthem additions: `any` / `all` / `none` / `count` for set fields, `in_last` / `not_in_last` for
+Plus X-Music additions: `any` / `all` / `none` / `count` for set fields, `in_last` / `not_in_last` for
 dates, `matches` for FTS, and `in_playlist` / `in_filter` for composition (a smart playlist may
 reference another by id — cycles are detected at save time and rejected).
 
@@ -655,7 +655,7 @@ Design notes that matter:
   arbitrary and changes between runs. The dialog should require a sort, defaulting to the current
   one, and offer `random` explicitly when arbitrary really is what is wanted.
 - **Sort direction carries meaning for NULLs.** "Least recently played" must include never-played
-  tracks, and Anthem's NULLs-last rule puts them at the wrong end. The sort editor needs a
+  tracks, and X-Music's NULLs-last rule puts them at the wrong end. The sort editor needs a
   per-key *nulls first / last* choice before this feature is honest.
 - `weighted_random` (§4.3) is a sort key like any other, so the same editor produces gmusicbrowser's
   best shuffle behaviour without a separate UI.
@@ -700,7 +700,7 @@ degrades to a plain FTS term.
 
 ### 5.1 The premise
 
-gmusicbrowser's real superpower is that the window is a document, not a program. Anthem keeps that
+gmusicbrowser's real superpower is that the window is a document, not a program. X-Music keeps that
 and puts it in a format people already know how to edit.
 
 A layout is a JSON document describing a tree of nodes. Nodes are either **containers** (split, tabs,
@@ -769,7 +769,7 @@ Three levels, all reaching the same document:
    header to add/remove/reorder columns. Changes write straight to the layout JSON.
 2. **Layout inspector** — a tree view of the document with a property grid generated from the widget
    manifest. Shows the JSON alongside, editable, with live validation.
-3. **The file** — layouts live at `~/.config/anthem/layouts/*.json` and hot-reload on save. This is
+3. **The file** — layouts live at `~/.config/x-music/layouts/*.json` and hot-reload on save. This is
    the escape hatch that makes power users happy and makes layouts shareable as a gist.
 
 Layouts support `extends`: a layout may inherit another and patch nodes by id (RFC 6902-style
@@ -803,7 +803,7 @@ database.
 ### 5.4 Theming
 
 Themes are **token documents**, not stylesheets. Halon's `tokens.json` is the reference input and its
-schema is Anthem's schema — same names, same light/dark split:
+schema is X-Music's schema — same names, same light/dark split:
 
 ```
 accent · border-{control,default,focus,hover} · focus-ring
@@ -813,7 +813,7 @@ surface-{default,navigation,navigation-hover,overlay,root,secondary}
 text-{body,heading,on-fill,on-light,on-navigation,secondary,tertiary}
 ```
 
-Anthem adds a small player-specific layer on top, derived by default but overridable:
+X-Music adds a small player-specific layer on top, derived by default but overridable:
 
 ```
 media-progress · media-progress-track · media-buffer
@@ -897,7 +897,7 @@ come from?" confusion that browse-by-panes normally causes.
 
 ### 6.5 Song properties — implemented
 
-A dedicated view for everything Anthem knows about one track. This is the first place the entity
+A dedicated view for everything X-Music knows about one track. This is the first place the entity
 model becomes visible to the user, and it is the natural home for several features that currently
 have nowhere to live.
 
@@ -955,21 +955,21 @@ transform-based (`translate3d` on a spacer), not `position: absolute` per row. S
 
 ### 7.0 Read-only mode
 
-**Anthem starts read-only and stays that way until told otherwise.** A music library is often
+**X-Music starts read-only and stays that way until told otherwise.** A music library is often
 irreplaceable, and the failure mode of a tag writer with a bug is silent, widespread and permanent.
 
 Enforcement is a chokepoint, not a convention: every filesystem-mutating operation passes through
 `assertWritable(operation, path)` in `src/main/safety.ts`, which throws unless the path lies inside
-Anthem's own data directory. Tag writing, file organizing, artwork embedding and deletion are all
+X-Music's own data directory. Tag writing, file organizing, artwork embedding and deletion are all
 downstream of it, so a new call site cannot forget to check.
 
-- Default: read-only. A missing or malformed `ANTHEM_ALLOW_WRITES` keeps protection on.
-- `ANTHEM_FORCE_READ_ONLY=1` pins the mode so the UI cannot disable it at all.
+- Default: read-only. A missing or malformed `X_MUSIC_ALLOW_WRITES` keeps protection on.
+- `X_MUSIC_FORCE_READ_ONLY=1` pins the mode so the UI cannot disable it at all.
 - The state is surfaced in the menu bar, not buried in preferences.
 - `scripts/run.sh` pins read-only unless the caller explicitly opts out.
 
 Covered by `test/unit/safety.test.ts`, including that a sibling directory such as
-`~/.config/anthem-backup` is not mistaken for Anthem's own data directory.
+`~/.config/x-music-backup` is not mistaken for X-Music's own data directory.
 
 ### 7.1 Reading and writing
 
@@ -981,7 +981,7 @@ Writing rules:
 
 - **Never** rewrite a file that has no pending changes. Tag writes are explicit, batched, and
   transactional per-file (write to temp, fsync, rename).
-- Preserve unknown frames byte-for-byte. Anthem is not allowed to lose a tag it does not understand.
+- Preserve unknown frames byte-for-byte. X-Music is not allowed to lose a tag it does not understand.
 - ID3v2.4 + UTF-8 is the default target for MP3; existing v2.3 files stay v2.3 unless the user opts
   into upgrading.
 - A dry-run diff view before any mass write, showing per-file before/after per-field.
@@ -990,12 +990,12 @@ Writing rules:
 
 ### 7.1.1 MusicBrainz Picard integration
 
-Anthem is not going to out-Picard Picard (§1.1). Picard has acoustic fingerprinting, the full
+X-Music is not going to out-Picard Picard (§1.1). Picard has acoustic fingerprinting, the full
 MusicBrainz release model, a plugin ecosystem and years of edge-case handling for exactly the job of
 *deciding what a file is*. Reimplementing that would be a bad use of the project's time and would be
 worse at it.
 
-So the position is: **Anthem owns the library; Picard owns authoritative tagging.** The integration
+So the position is: **X-Music owns the library; Picard owns authoritative tagging.** The integration
 makes them cooperate rather than compete.
 
 #### 7.1.1.1 What it looks like
@@ -1004,16 +1004,16 @@ Three levels, in increasing order of effort.
 
 **1. Hand off a selection (small, high value).** A context-menu action that launches Picard with the
 selected tracks' files as arguments — Picard accepts file and directory paths on the command line.
-The user tags in Picard, saves, and returns; Anthem rescans just those paths and picks up the
+The user tags in Picard, saves, and returns; X-Music rescans just those paths and picks up the
 changes. The path to the Picard binary is a setting, discovered from `PATH` by default. This is
 close to free and covers most real use.
 
 **2. Notice what Picard did (the part that needs care).** Picard *writes* files, which collides with
-two of Anthem's invariants:
+two of X-Music's invariants:
 
 - **Read-only mode (§7.0) does not protect against this** — the writes come from another process.
   That is fine and intended, but the UI must say so plainly: handing off to Picard means files will
-  be modified by a tool that is not bound by Anthem's read-only setting.
+  be modified by a tool that is not bound by X-Music's read-only setting.
 - **`audio_hash` is unaffected**, because it excludes metadata regions (§3.5). This is where that
   decision pays off: a Picard retag changes `mtime` and `filesize` but not the audio, so the rescan
   matches the existing media by hash, and **ratings and play history survive tagging**. A
@@ -1026,13 +1026,13 @@ two of Anthem's invariants:
 the duplicate finder promotes those tracks to `certain` confidence (§9.2) and identity resolution
 gains its strongest signal (§3.5.0). The scanner already reads the tag; nothing more is needed.
 
-#### 7.1.1.2 What Anthem should *not* do
+#### 7.1.1.2 What X-Music should *not* do
 
 - **Not embed Picard**, and not reimplement AcoustID lookup (§3.5 explains why AcoustID is a hint,
   not a key).
 - **Not sync back to MusicBrainz.** Submitting edits is Picard's job and carries community
-  responsibilities Anthem should not take on.
-- **Not fight Picard over file layout.** If a user lets Picard rename files, Anthem follows via move
+  responsibilities X-Music should not take on.
+- **Not fight Picard over file layout.** If a user lets Picard rename files, X-Music follows via move
   detection rather than trying to own the naming.
 
 #### 7.1.1.3 What is needed
@@ -1078,7 +1078,7 @@ remote fetch is a later plugin (§11).
   nothing.
 
 **Serving it to the renderer** needed its own scheme. The renderer runs under a strict CSP and
-cannot load `file://`, so cached art is served over `anthem-art://`, registered as a privileged
+cannot load `file://`, so cached art is served over `x-music-art://`, registered as a privileged
 scheme and restricted to paths inside the cache directory — a url pointing anywhere else is refused
 rather than read.
 
@@ -1143,7 +1143,7 @@ Playback shipped broken, and the fake-engine tests all passed while it was. Wort
    forever rather than failing. Fixed by separating a raw `send()` used during start-up from the
    gated `command()` used after it.
 2. **The wrong `loadfile` argument slot.** mpv 0.38 added an insert index, making the signature
-   `loadfile <url> <flags> <index> <options>`. Anthem passed its options string where the index
+   `loadfile <url> <flags> <index> <options>`. X-Music passed its options string where the index
    goes, which mpv rejects as `invalid parameter`; an empty options string is rejected too, so the
    argument list has to be built rather than padded.
 3. **A shared IPC socket path.** It was keyed on the process id, so two engines in one process
@@ -1395,7 +1395,7 @@ duplicate finder later only has to produce candidate id sets.
   Details that matter, all pinned by tests: gmusicbrowser stores rating 255 to mean *unrated*, which
   is not a rating of 255 and not a rating of 0; multi-value fields use a literal `\x00` separator
   (four characters, not a NUL byte); filesystem names are percent-encoded and a malformed escape
-  must keep the value rather than lose it; timestamps are unix seconds against Anthem's
+  must keep the value rather than lose it; timestamps are unix seconds against X-Music's
   milliseconds. Files gmusicbrowser flagged missing import as tracks with `media.present = 0`, so
   their ratings and history survive.
 
@@ -1422,7 +1422,7 @@ duplicate finder later only has to produce candidate id sets.
 - **Last.fm / ListenBrainz** scrobbling with an offline queue that survives restarts.
 - A local HTTP control API (opt-in, loopback-only by default, token-authenticated) — this is what a
   future phone remote and CLI both talk to.
-- A `anthemctl` CLI over the same API: `anthemctl play`, `anthemctl query 'rating:>=4 genre:jazz'`.
+- An `x-music-ctl` CLI over the same API: `x-music-ctl play`, `x-music-ctl query 'rating:>=4 genre:jazz'`.
 
 ---
 
@@ -1430,13 +1430,13 @@ duplicate finder later only has to produce candidate id sets.
 
 Deferred past v1, but the seams are designed now so it is not a rewrite:
 
-- **UI plugins**: a widget bundle (manifest + ES module) dropped in `~/.config/anthem/widgets/`,
+- **UI plugins**: a widget bundle (manifest + ES module) dropped in `~/.config/x-music/widgets/`,
   registering into the same registry as built-ins. Sandboxed to the renderer, no filesystem access
   except through declared IPC permissions.
 - **Core plugins**: WASM components (`wasmtime`) implementing declared host interfaces — metadata
   provider, artwork provider, scrobbler, audio filter. WASM over native dylibs for the obvious
   safety and portability reasons.
-- Everything Anthem ships that *could* be a plugin (lyrics fetch, artist bio, artwork fetch) is built
+- Everything X-Music ships that *could* be a plugin (lyrics fetch, artist bio, artwork fetch) is built
   as one, to keep the interfaces honest.
 
 ---
@@ -1497,7 +1497,7 @@ It has already earned its place. It caught a three-valued-logic divergence: SQL'
 evaluates to NULL for a track with no year and therefore excludes it, while the native predicate
 included it. The resolution is a decided semantic, not a patch:
 
-> **Anthem uses two-valued logic.** A predicate is true or false for a track, never unknown. A
+> **X-Music uses two-valued logic.** A predicate is true or false for a track, never unknown. A
 > missing value fails the predicate, and negation flips that. So "not rated 5 stars" includes
 > unrated tracks, which is what a listener means.
 
@@ -1528,7 +1528,7 @@ The SQL compiler wraps every negation in `COALESCE(..., 0)` to enforce it.
 ## 14. Repository layout
 
 ```
-anthem/
+x-music/
 ├── src/
 │   ├── main/                 # Electron main process
 │   │   ├── db/               # schema, migrations, pragmas, DAO
@@ -1600,7 +1600,7 @@ weighted random, auto-fill, playlist import/export.
 
 **M6 — Tag editing (3 wk).** Single and mass edit, dry-run diffs, write journal and undo, tags↔
 filename, artwork management, album operations. Includes the Picard hand-off (§7.1.1), which is
-small and should land first — it covers authoritative tagging without Anthem writing anything.
+small and should land first — it covers authoritative tagging without X-Music writing anything.
 
 Also here: the field editor and column picker that make §3.2.1's promise true for user-defined
 fields.
@@ -1612,7 +1612,7 @@ inspector, hot reload, `extends` + patches, shipped alternate layouts.
 accessibility pass (keyboard-complete, focus visible, screen reader labels), tray/notifications.
 
 **M9 — Migration and 1.0 (2 wk).** iTunes/Rhythmbox import, merge history view,
-`anthemctl`, packaging (AppImage, Flatpak, `.deb`, Nix flake, MSI, `.dmg`), documentation.
+`x-music-ctl`, packaging (AppImage, Flatpak, `.deb`, Nix flake, MSI, `.dmg`), documentation.
 
 Post-1.0: plugin system, remote web UI, replay-gain scanner UI, lyrics/artist-info providers,
 visualizer library, multi-library support.
@@ -1653,11 +1653,11 @@ visualizer library, multi-library support.
 6. **Video files.** gmusicbrowser tolerates them. Proposal: index and play audio-only, no video
    window, in v1.
 7. **Multi-library / profiles.** Deferred, but the database path is already parameterized
-   (`ANTHEM_DB`), so it stays possible.
+   (`X_MUSIC_DB`), so it stays possible.
 
 ### 17.1 Album identity (expanded)
 
-**The problem.** "Album" is not an entity in a music file — it is a *string* in a tag. Anthem has to
+**The problem.** "Album" is not an entity in a music file — it is a *string* in a tag. X-Music has to
 manufacture an entity from it, and every reasonable rule is wrong somewhere:
 
 | Rule | Breaks on |
@@ -1780,7 +1780,7 @@ the most interesting decisions in the document.
 | Capability | gmb | QL | Status | Note |
 |---|---|---|---|---|
 | Full filter algebra over every field | ✓ | ✓ | **In v1** | §4.1 |
-| Text query language in a single box | smart strings | `#(rating > 3)` syntax | **In v1** | §4.4 — Anthem's own syntax, both importable |
+| Text query language in a single box | smart strings | `#(rating > 3)` syntax | **In v1** | §4.4 — X-Music's own syntax, both importable |
 | Regex matching on any field | ✓ | ✓ (Python `re`) | **In v1** | `regex` op; Rust `regex` crate, no backrefs |
 | Numeric comparison with units (`#(length > 4:00)`) | ✓ | ✓ | **In v1** | Duration/date literals in the parser |
 | Relative-date queries (`#(lastplayed < 7 days)`) | ✓ | ✓ | **In v1** | `in_last` |
@@ -1806,7 +1806,7 @@ the most interesting decisions in the document.
 | Find & replace across a field, regex | ✓ | ✓ | **In v1** | §7.2 |
 | Title-case / case transforms with exceptions | ✓ | ✓ | **In v1** | §7.2 |
 | Split/merge multi-value tags | ✓ | ✓ | **In v1** | §7.2 |
-| Standalone tag editor app | — | ✓ (Ex Falso) | **Decide** | Anthem could ship the tag editor as a separate window/binary |
+| Standalone tag editor app | — | ✓ (Ex Falso) | **Decide** | X-Music could ship the tag editor as a separate window/binary |
 | Arbitrary user-defined fields | ✓ | ✓ | **In v1** | §3.1 |
 | Free-form labels/tags on tracks | ✓ | ✓ (`~grouping`) | **In v1** | `tags` set field |
 | Preserve unknown tag frames | ✓ | ✓ | **In v1** | §7.1 — hard requirement |
@@ -1852,7 +1852,7 @@ the most interesting decisions in the document.
 | Resume playback position on launch | ✓ | ✓ | **In v1** | §8.2 |
 | Stop after current track | ✓ | ✓ | **Decide** | Trivial; just needs a home in the UI |
 | Waveform seekbar | — | ✓ (plugin) | **Post-1.0** | Requires a background analysis pass + cache |
-| Visualizer | ✓ | — | **Post-1.0** | Web Audio makes this the easiest win Anthem has |
+| Visualizer | ✓ | — | **Post-1.0** | Web Audio makes this the easiest win X-Music has |
 | Output device selection | ✓ | ✓ | **In v1** | Delegated to mpv |
 | Streaming out (Icecast/DLNA server) | ✓ (iceserver) | — | **Reject** | Out of scope; a separate daemon's job |
 | Play remote/streaming URLs ad hoc | ✓ | ✓ | **Decide** | Cheap via mpv; the *library* side is what's expensive |
@@ -1861,7 +1861,7 @@ the most interesting decisions in the document.
 
 | Capability | gmb | QL | Status | Note |
 |---|---|---|---|---|
-| Fully user-composed window layout | ✓ (`.layout`) | — | **In v1** | §5 — Anthem's headline feature |
+| Fully user-composed window layout | ✓ (`.layout`) | — | **In v1** | §5 — X-Music's headline feature |
 | Multiple shipped layouts, switchable at runtime | ✓ | — | **In v1** | §5.3 |
 | Detached/floating panel windows | ✓ | — | **Decide** | Multi-window in a WebView shell is real work |
 | Desktop widget mode (borderless always-on-top) | ✓ (plugin) | — | **Decide** | Falls out of layouts + a window-mode flag |
@@ -1886,7 +1886,7 @@ the most interesting decisions in the document.
 | MPRIS2 | ✓ | ✓ | **In v1** | §10 |
 | Last.fm scrobbling | ✓ | ✓ | **In v1** | §10 |
 | ListenBrainz | — | ✓ | **In v1** | §10 |
-| Command-line control | ✓ | ✓ (`quodlibet --next`) | **In v1** | `anthemctl`, §10 |
+| Command-line control | ✓ | ✓ (`quodlibet --next`) | **In v1** | `x-music-ctl`, §10 |
 | Named-pipe/FIFO control | ✓ | — | **Reject** | Superseded by the HTTP API + CLI |
 | HTTP remote control / web UI | — | ✓ (plugin) | **In v1** (API) / **Post-1.0** (web UI) | §10 |
 | "Run a command on track change" hooks | ✓ | ✓ | **Decide** | Powerful and a security surface; needs an explicit opt-in model |
@@ -1896,7 +1896,7 @@ the most interesting decisions in the document.
 | Plugin system | ✓ (Perl) | ✓ (Python, ~100 plugins) | **Post-1.0** | §11 |
 | Autosave / crash-safe library persistence | ✓ (plugin) | ✓ | **In v1** | SQLite WAL makes this structural, not a plugin |
 
-### 18.7 Things neither has that Anthem should decide on
+### 18.7 Things neither has that X-Music should decide on
 
 | Idea | Status | Note |
 |---|---|---|
@@ -1951,7 +1951,7 @@ design.
 
 ### A.3 The tag library is the deciding factor
 
-§7.1 makes a hard promise: *"Anthem is not allowed to lose a tag it does not understand."* That
+§7.1 makes a hard promise: *"X-Music is not allowed to lose a tag it does not understand."* That
 promise is only as good as the library behind it.
 
 | Library | Language | Assessment |
@@ -2048,7 +2048,7 @@ format coverage, fine as a fallback.
 **§14 — Repository layout:**
 
 ```
-anthem/
+x-music/
 ├── src/
 │   ├── main/            # Electron main: library, query, tags, playback, services
 │   │   ├── library/     # index, scanner, watcher, dedupe
@@ -2060,7 +2060,7 @@ anthem/
 │   ├── shared/          # types, field descriptors, format strings, filter AST — imported by BOTH sides
 │   └── renderer/        # layout engine, widgets, theme runtime, stores
 ├── fields/  layouts/  themes/  docs/  bench/
-└── cli/                 # anthemctl
+└── cli/                 # x-music-ctl
 ```
 
 The `shared/` directory is Stack B's main structural payoff: the filter AST, field descriptors and

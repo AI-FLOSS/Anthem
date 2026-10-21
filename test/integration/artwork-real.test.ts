@@ -12,9 +12,9 @@ import { copyLiveLibrary, hasLiveLibrary } from '../helpers/live'
 
 describe.runIf(hasLiveLibrary())('artwork against the real library', () => {
   it('finds covers for real tracks', async () => {
-    const cache = join(tmpdir(), 'anthem-art-real-cache')
+    const cache = join(tmpdir(), 'x-music-art-real-cache')
     rmSync(cache, { recursive: true, force: true })
-    const db = new DatabaseSync(copyLiveLibrary('anthem-art-real.db'))
+    const db = new DatabaseSync(copyLiveLibrary('x-music-art-real.db'))
 
     const ids = (db.prepare(`
       SELECT t.id FROM tracks t JOIN media m ON m.track_id = t.id

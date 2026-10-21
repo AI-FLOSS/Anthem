@@ -1,4 +1,4 @@
-// Runs only on a machine that has a real Anthem library, as a sanity check that the duplicate
+// Runs only on a machine that has a real X-Music library, as a sanity check that the duplicate
 // finder and merge preview behave on real data rather than only on fixtures.
 
 import { describe, expect, it } from 'vitest'
@@ -11,7 +11,7 @@ import { mergePreview } from '@main/library/merge'
 describe.runIf(hasLiveLibrary())('against the real library on this machine', () => {
   it('finds duplicates and previews a merge without throwing', () => {
     // Copy first: this test must never touch the live database.
-    const db = new DatabaseSync(copyLiveLibrary('anthem-real-check.db'))
+    const db = new DatabaseSync(copyLiveLibrary('x-music-real-check.db'))
 
     const total = (db.prepare('SELECT COUNT(*) AS n FROM tracks').get() as { n: number }).n
     expect(total).toBeGreaterThan(0)

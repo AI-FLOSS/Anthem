@@ -101,11 +101,11 @@ export function SettingsPage({
                   <span class={s.hint}>{safety.reason}</span>
                   {safety.pinned ? (
                     <span class={s.hint}>
-                      Pinned by the environment. Unset <code class={s.code}>ANTHEM_FORCE_READ_ONLY</code> to change it.
+                      Pinned by the environment. Unset <code class={s.code}>X_MUSIC_FORCE_READ_ONLY</code> to change it.
                     </span>
                   ) : (
                     <span class={s.hint}>
-                      Anthem cannot write tags yet, so this is a guarantee rather than a preference.
+                      X-Music cannot write tags yet, so this is a guarantee rather than a preference.
                     </span>
                   )}
                 </>
@@ -160,7 +160,7 @@ export function SettingsPage({
         <section class={s.section}>
           <h2 class={s.heading}>About</h2>
           <div class={s.field}>
-            <span class={s.label}>Anthem</span>
+            <span class={s.label}>X-Music</span>
             <span>{info?.version ?? '—'}</span>
           </div>
           <div class={s.field}>

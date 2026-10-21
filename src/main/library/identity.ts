@@ -67,7 +67,7 @@ export interface TrackCandidate {
 export interface UpsertOptions {
   /**
    * Whether the source is authoritative for ratings, play counts and history. True for the
-   * gmusicbrowser import; false for a filesystem scan, which must never clobber Anthem's own
+   * gmusicbrowser import; false for a filesystem scan, which must never clobber X-Music's own
    * statistics with whatever happens to be in a tag.
    */
   statistics?: boolean

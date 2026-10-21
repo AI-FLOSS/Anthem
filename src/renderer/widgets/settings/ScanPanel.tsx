@@ -68,11 +68,11 @@ export function ScanPanel() {
 
   useEffect(() => {
     void load()
-    const offProgress = window.anthemEvents.on('scan:progress', (p) => setProgress(p))
-    const offFiles = window.anthemEvents.on('scan:files', (batch) => {
+    const offProgress = window.xMusicEvents.on('scan:progress', (p) => setProgress(p))
+    const offFiles = window.xMusicEvents.on('scan:files', (batch) => {
       setResults((prev) => [...prev, ...batch])
     })
-    const offDone = window.anthemEvents.on('scan:done', (r) => {
+    const offDone = window.xMusicEvents.on('scan:done', (r) => {
       setReport(r)
       setProgress(null)
       setScanning(false)
@@ -141,7 +141,7 @@ export function ScanPanel() {
       <header class={s.header}>
         <h2 class={s.heading}>Music folders</h2>
         <p class={s.lead}>
-          Anthem reads these folders to build the library. Files are only ever read, never modified.
+          X-Music reads these folders to build the library. Files are only ever read, never modified.
         </p>
       </header>
 

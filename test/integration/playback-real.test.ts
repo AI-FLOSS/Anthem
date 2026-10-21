@@ -13,7 +13,7 @@ const mpv = findMpv() ?? undefined
 
 describe.runIf(hasLiveLibrary() && mpv)('playback against the real library', () => {
   it('loads a real track and the position advances', async () => {
-    const db = new DatabaseSync(copyLiveLibrary('anthem-play-check.db'))
+    const db = new DatabaseSync(copyLiveLibrary('x-music-play-check.db'))
 
     const row = db.prepare(`
       SELECT t.id, t.title, m.uri, COUNT(m.id) AS files
@@ -69,7 +69,7 @@ describe.runIf(hasLiveLibrary() && mpv)('playback against the real library', () 
     // resolves. A timeout rather than a hang is the point of this assertion.
     await engine.setVolume(0)
 
-    const db = new DatabaseSync(copyLiveLibrary('anthem-play-check.db'))
+    const db = new DatabaseSync(copyLiveLibrary('x-music-play-check.db'))
     const uri = (db.prepare('SELECT uri FROM media WHERE present = 1 LIMIT 1').get() as
       { uri: string }).uri
 

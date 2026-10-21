@@ -31,7 +31,7 @@ const tracks = (): number => count('SELECT COUNT(*) AS n FROM tracks')
 const media = (): number => count('SELECT COUNT(*) AS n FROM media')
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), 'anthem-scan-'))
+  dir = await mkdtemp(join(tmpdir(), 'x-music-scan-'))
   db = freshDb()
 })
 
@@ -134,7 +134,7 @@ describe('scanning', () => {
     expect(media()).toBe(1)
   })
 
-  it('never overwrites Anthem statistics from a tag', async () => {
+  it('never overwrites X-Music statistics from a tag', async () => {
     await writeFile(join(dir, 'x.flac'), flac('e'.repeat(32), Buffer.alloc(512, 8)))
     await scanRoots(db as never, [dir])
     db.prepare('UPDATE tracks SET rating = 80, play_count = 42').run()

@@ -42,7 +42,7 @@ function makeTrack(uri: string, album?: string): number {
 }
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), 'anthem-art-'))
+  dir = await mkdtemp(join(tmpdir(), 'x-music-art-'))
   cache = join(dir, 'cache')
   db = freshDb()
 })

@@ -1,4 +1,4 @@
-# Anthem
+# X-Music
 
 [![AI readiness](https://img.shields.io/endpoint?url=https://ai-floss.github.io/badges/AI-FLOSS/Anthem.json)](https://ai-floss.github.io/guidelines/readiness/)
 
@@ -74,17 +74,17 @@ otherwise makes Electron run as bare node and die on the ESM entry point.
 | `npm run app` | Build if needed and launch, read-only |
 | `npm run rebuild:electron` | Rebuild `better-sqlite3` against Electron's ABI |
 
-Benchmarks default to 50k synthetic tracks (the §12 target); `ANTHEM_BENCH_SIZE=20000 npm run bench`
-for a quicker pass. Point the app at a scratch database with `ANTHEM_DB=/tmp/anthem.db`.
+Benchmarks default to 50k synthetic tracks (the §12 target); `X_MUSIC_BENCH_SIZE=20000 npm run bench`
+for a quicker pass. Point the app at a scratch database with `X_MUSIC_DB=/tmp/x-music.db`.
 
 ### Logging
 
 Configured entirely by environment, so detail can be turned on without a rebuild.
 
 ```sh
-ANTHEM_LOG=debug npm run app              # everything
-ANTHEM_LOG=warn,play:debug npm run app    # quiet, except playback
-ANTHEM_LOG_FILE=/tmp/anthem.log npm run app
+X_MUSIC_LOG=debug npm run app              # everything
+X_MUSIC_LOG=warn,play:debug npm run app    # quiet, except playback
+X_MUSIC_LOG_FILE=/tmp/x-music.log npm run app
 ```
 
 Levels are `critical`, `error`, `warn`, `info` (default) and `debug`; `warning`, `err`, `verbose`
@@ -96,13 +96,13 @@ originating in the renderer.
 visible from the terminal rather than trapped in a devtools console nobody has open. Uncaught errors
 and unhandled rejections are reported automatically.
 
-A malformed `ANTHEM_LOG` falls back to the default rather than silencing logging.
+A malformed `X_MUSIC_LOG` falls back to the default rather than silencing logging.
 
 ### Read-only by default
 
-Anthem starts read-only and `npm run app` pins it with `ANTHEM_FORCE_READ_ONLY=1`. Every
+X-Music starts read-only and `npm run app` pins it with `X_MUSIC_FORCE_READ_ONLY=1`. Every
 filesystem-mutating operation goes through `assertWritable()` in `src/main/safety.ts`, which throws
-unless the path is inside Anthem's own data directory. Point it at a real music library safely.
+unless the path is inside X-Music's own data directory. Point it at a real music library safely.
 
 ### Getting your library in
 
@@ -112,7 +112,7 @@ labels and saved lists. A preview parses the file without writing anything, so y
 first.
 
 Settings → Folders adds music directories and scans them. Scanning reads tags only; it never
-overwrites Anthem's own ratings or play counts, recognises moved and renamed files by audio content,
+overwrites X-Music's own ratings or play counts, recognises moved and renamed files by audio content,
 and flags files that have disappeared rather than deleting their tracks.
 
 Both are idempotent. Running either twice, or both in either order, will not duplicate anything.
@@ -146,12 +146,12 @@ primitives and no DOM access. Replacing the UI framework touches `renderer/` onl
 
 ## Contributing
 
-Anthem is an [AI-FLOSS](https://ai-floss.github.io) project, and AI-assisted contributions are
+X-Music is an [AI-FLOSS](https://ai-floss.github.io) project, and AI-assisted contributions are
 welcome. Read [AGENTS.md](AGENTS.md) and the
 [AI policy](https://github.com/AI-FLOSS/.github/blob/main/AI_POLICY.md), and say in your pull request
 how AI was involved.
 
 ## Licence
 
-Anthem is free software, licensed under the [GNU General Public License](LICENSE), version 3 or (at
+X-Music is free software, licensed under the [GNU General Public License](LICENSE), version 3 or (at
 your option) any later version.

@@ -2,7 +2,7 @@
 //
 // mpv is used for the same reason gmusicbrowser eventually added an mpv backend: gapless, format
 // coverage, precise seeking and output backend selection are unglamorous and enormous to re-solve,
-// and mpv has already solved them. Anthem talks to it as a subprocess rather than linking libmpv,
+// and mpv has already solved them. X-Music talks to it as a subprocess rather than linking libmpv,
 // which keeps the native dependency surface at zero.
 
 import { spawn, type ChildProcess } from 'node:child_process'
@@ -16,7 +16,7 @@ import type { EngineListener, EngineState, LoadOptions, PlaybackEngine } from '.
 /** Finds an mpv binary: an explicit setting, then PATH, then a Nix store path. */
 export function findMpv(explicit?: string): string | null {
   if (explicit && existsSync(explicit)) return explicit
-  if (process.env.ANTHEM_MPV && existsSync(process.env.ANTHEM_MPV)) return process.env.ANTHEM_MPV
+  if (process.env.X_MUSIC_MPV && existsSync(process.env.X_MUSIC_MPV)) return process.env.X_MUSIC_MPV
 
   for (const dir of (process.env.PATH ?? '').split(':')) {
     if (!dir) continue
@@ -65,7 +65,7 @@ export class MpvEngine implements PlaybackEngine {
   private swapping = false
 
   constructor(private readonly opts: MpvOptions = {}) {
-    this.socketPath = join(tmpdir(), `anthem-mpv-${process.pid}-${++instanceCounter}.sock`)
+    this.socketPath = join(tmpdir(), `x-music-mpv-${process.pid}-${++instanceCounter}.sock`)
     // A leftover socket file stops mpv binding, so clear it before starting.
     rmSync(this.socketPath, { force: true })
     this.ready = this.start().catch((err: Error) => {
@@ -86,7 +86,7 @@ export class MpvEngine implements PlaybackEngine {
 
   private async start(): Promise<void> {
     const binary = findMpv(this.opts.binary)
-    if (!binary) throw new Error('mpv was not found; set ANTHEM_MPV or install mpv')
+    if (!binary) throw new Error('mpv was not found; set X_MUSIC_MPV or install mpv')
 
     this.proc = spawn(binary, [
       '--idle=yes',

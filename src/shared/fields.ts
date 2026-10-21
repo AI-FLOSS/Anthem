@@ -120,7 +120,7 @@ export const BUILTIN_FIELDS: readonly FieldDescriptor[] = [
   f({ id: 'tags', name: 'Labels', type: 'set', storage: 'multi', fieldId: 7, width: 140,
       flags: ['filterable', 'groupable', 'sortable', 'editable', 'columnar', 'searchable'] }),
 
-  // ── statistics (Anthem-owned) ──────────────────────────────────────────────
+  // ── statistics (X-Music-owned) ──────────────────────────────────────────────
   f({ id: 'rating', name: 'Rating', type: 'rating', storage: 'column', width: 90, range: [0, 100],
       tags: { id3v2: 'POPM', vorbis: 'FMPS_RATING', ape: 'FMPS_RATING' },
       flags: ['filterable', 'groupable', 'sortable', 'editable', 'columnar'] }),

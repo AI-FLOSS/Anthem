@@ -1,4 +1,4 @@
-// Read-only mode is the promise that lets someone point Anthem at an irreplaceable music library.
+// Read-only mode is the promise that lets someone point X-Music at an irreplaceable music library.
 // These tests exist so the promise is checked rather than assumed.
 
 import { describe, expect, it, beforeEach } from 'vitest'
@@ -7,8 +7,8 @@ import {
 } from '@main/safety'
 
 beforeEach(() => {
-  delete process.env.ANTHEM_FORCE_READ_ONLY
-  initSafety(['/home/u/.config/anthem'])
+  delete process.env.X_MUSIC_FORCE_READ_ONLY
+  initSafety(['/home/u/.config/x-music'])
   setReadOnly(true)
 })
 
@@ -35,14 +35,14 @@ describe('read-only mode', () => {
     }
   })
 
-  it('still allows Anthem to maintain its own database', () => {
-    expect(() => assertWritable('playlist-write', '/home/u/.config/anthem/library.db')).not.toThrow()
-    expect(() => assertWritable('playlist-write', '/home/u/.config/anthem/art/ab.webp')).not.toThrow()
+  it('still allows X-Music to maintain its own database', () => {
+    expect(() => assertWritable('playlist-write', '/home/u/.config/x-music/library.db')).not.toThrow()
+    expect(() => assertWritable('playlist-write', '/home/u/.config/x-music/art/ab.webp')).not.toThrow()
   })
 
   it('does not treat a sibling directory as its own data directory', () => {
     // A prefix match without a separator check would wrongly allow this.
-    expect(() => assertWritable('file-delete', '/home/u/.config/anthem-backup/x')).toThrow(ReadOnlyError)
+    expect(() => assertWritable('file-delete', '/home/u/.config/x-music-backup/x')).toThrow(ReadOnlyError)
   })
 
   it('permits library writes once explicitly disabled', () => {
@@ -52,7 +52,7 @@ describe('read-only mode', () => {
   })
 
   it('cannot be disabled when pinned by the environment', () => {
-    process.env.ANTHEM_FORCE_READ_ONLY = '1'
+    process.env.X_MUSIC_FORCE_READ_ONLY = '1'
     expect(() => setReadOnly(false)).toThrow(/pinned/)
     expect(isReadOnly()).toBe(true)
   })
@@ -60,7 +60,7 @@ describe('read-only mode', () => {
   it('reports a status the UI can display without guessing', () => {
     expect(safetyStatus().readOnly).toBe(true)
     expect(safetyStatus().reason).toMatch(/will not modify/)
-    process.env.ANTHEM_FORCE_READ_ONLY = '1'
+    process.env.X_MUSIC_FORCE_READ_ONLY = '1'
     expect(safetyStatus().pinned).toBe(true)
   })
 })

@@ -43,7 +43,7 @@ const stat = (id: number): { play_count: number; skip_count: number; last_played
     .get(id) as never
 
 beforeEach(() => {
-  scratch = mkdtempSync(join(tmpdir(), 'anthem-tracks-'))
+  scratch = mkdtempSync(join(tmpdir(), 'x-music-tracks-'))
   db = freshDb()
   engine = new NullEngine()
   player = new Player(db as never, engine)
@@ -81,7 +81,7 @@ describe('playing a track', () => {
   })
 
   it('prefers higher quality among sources that exist', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'anthem-player-'))
+    const dir = mkdtempSync(join(tmpdir(), 'x-music-player-'))
     const lossless = join(dir, 'a.flac')
     const lossy = join(dir, 'b.mp3')
     writeFileSync(lossless, Buffer.alloc(16))
@@ -129,7 +129,7 @@ describe('playing a track', () => {
   })
 
   it('falls through to a source that is really there', async () => {
-    const real = join(tmpdir(), `anthem-player-${Date.now()}.flac`)
+    const real = join(tmpdir(), `x-music-player-${Date.now()}.flac`)
     writeFileSync(real, Buffer.alloc(16))
     try {
       const id = makeTrack({ files: [

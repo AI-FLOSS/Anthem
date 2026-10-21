@@ -8,7 +8,7 @@ import { copyFileSync, existsSync } from 'node:fs'
 import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-export const livePath = (): string => join(homedir(), '.config/anthem/library.db')
+export const livePath = (): string => join(homedir(), '.config/x-music/library.db')
 
 export const hasLiveLibrary = (): boolean => existsSync(livePath())
 

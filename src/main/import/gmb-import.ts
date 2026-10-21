@@ -1,6 +1,6 @@
-// Imports a parsed gmbrc into Anthem's entity model.
+// Imports a parsed gmbrc into X-Music's entity model.
 //
-// gmusicbrowser has one row per file; Anthem has a track plus its media. The import creates one
+// gmusicbrowser has one row per file; X-Music has a track plus its media. The import creates one
 // track and one file-media per gmusicbrowser song, which is correct but conservative: it does not
 // try to merge two files that are the same recording. Deduplication is a separate, reviewable
 // operation, and silently merging someone's library on import would be the wrong default.
@@ -33,7 +33,7 @@ export interface ImportReport {
   notes: string[]
 }
 
-/** gmusicbrowser timestamps are unix seconds; Anthem stores milliseconds. */
+/** gmusicbrowser timestamps are unix seconds; X-Music stores milliseconds. */
 const toMs = (secs: number | undefined): number | null =>
   secs === undefined || secs <= 0 ? null : secs * 1000
 
@@ -69,7 +69,7 @@ export function importGmbrc(db: Db, data: GmbrcData, opts: ImportOptions = {}): 
     'INSERT OR IGNORE INTO playlist_tracks (playlist_id, track_id, position) VALUES (?, ?, ?)')
   const lastId = db.prepare('SELECT last_insert_rowid() AS id')
 
-  /** gmusicbrowser song id to Anthem track id, so SavedLists can be resolved afterwards. */
+  /** gmusicbrowser song id to X-Music track id, so SavedLists can be resolved afterwards. */
   const trackByGmbId = new Map<number, number>()
 
   db.exec('BEGIN')
@@ -169,7 +169,7 @@ export function importGmbrc(db: Db, data: GmbrcData, opts: ImportOptions = {}): 
   if (data.savedFilters.length > 0) {
     report.notes.push(
       `${data.savedFilters.length} saved filters found but not translated. gmusicbrowser filter ` +
-      'strings map onto the Anthem filter AST, which is a separate import step (DESIGN-SPEC 9.3).'
+      'strings map onto the X-Music filter AST, which is a separate import step (DESIGN-SPEC 9.3).'
     )
   }
   if (report.missingFlagged > 0) {

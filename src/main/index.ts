@@ -50,7 +50,7 @@ function createWindow(): BrowserWindow {
 // Cached covers cannot be served over file:// under the renderer's CSP, so they get their own
 // scheme. Registered before ready, as Electron requires.
 protocol.registerSchemesAsPrivileged([{
-  scheme: 'anthem-art',
+  scheme: 'x-music-art',
   privileges: { standard: true, secure: true, supportFetchAPI: true, bypassCSP: false }
 }])
 
@@ -59,13 +59,13 @@ app.commandLine.appendSwitch('disable-renderer-backgrounding')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
 
 app.whenReady().then(() => {
-  // Anthem's own directories are the only paths it may ever write to (see safety.ts).
-  initSafety([app.getPath('userData'), join(app.getPath('temp'), 'anthem')])
+  // X-Music's own directories are the only paths it may ever write to (see safety.ts).
+  initSafety([app.getPath('userData'), join(app.getPath('temp'), 'x-music')])
 
   log.info('starting', { logging: describeLogging(), version: app.getVersion() })
 
   // The url carries the cache path; only files inside the cache directory are served.
-  protocol.handle('anthem-art', (request) => {
+  protocol.handle('x-music-art', (request) => {
     const url = new URL(request.url)
     const file = decodeURIComponent(url.pathname)
     const root = artCacheDir()

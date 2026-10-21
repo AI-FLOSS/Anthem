@@ -156,7 +156,7 @@ class Compiler {
 
     if (n.op === 'not') {
       if (n.children.length !== 1) throw new Error('not takes exactly one child')
-      // Anthem uses two-valued logic: a predicate is true or false for a track, never unknown.
+      // X-Music uses two-valued logic: a predicate is true or false for a track, never unknown.
       // Without the COALESCE, SQL's NULL propagation would silently drop tracks with a missing
       // value from a negated filter — so "not rated 5 stars" would exclude unrated tracks.
       return `NOT COALESCE((${this.node(n.children[0]!)}), 0)`

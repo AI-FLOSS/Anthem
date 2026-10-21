@@ -1,4 +1,4 @@
-// Everything Anthem knows about one track.
+// Everything X-Music knows about one track.
 //
 // This is where the entity model becomes visible to the user: not just tags, but how many sources
 // back the track, where each one is, which will actually play, and how the track came to be

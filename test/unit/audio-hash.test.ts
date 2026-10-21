@@ -97,7 +97,7 @@ function opusWith(tagBytes: number, audioPackets: Buffer[], serial = 1): Buffer 
 }
 
 beforeAll(async () => {
-  dir = await mkdtemp(join(tmpdir(), 'anthem-hash-'))
+  dir = await mkdtemp(join(tmpdir(), 'x-music-hash-'))
 })
 
 afterAll(async () => {

@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 
 import { BUILTIN_FIELDS } from '@shared/fields'
-import type { AnthemApi, Channel, GroupRow, TrackRow } from '@shared/ipc'
+import type { XMusicApi, Channel, GroupRow, TrackRow } from '@shared/ipc'
 import { compileFilter, compileGroupBy } from './query/compile'
 import { stats, type DB } from './db'
 import { safetyStatus } from './safety'
@@ -20,7 +20,7 @@ import { Player } from './play/player'
 import { MpvEngine, findMpv } from './play/mpv'
 import { NullEngine } from './play/engine'
 import {
-  EVENT_CHANNEL, type AnthemEvents, type EventName, type FileResult, type Root
+  EVENT_CHANNEL, type XMusicEvents, type EventName, type FileResult, type Root
 } from '@shared/ipc'
 
 // Album lives on the albums table and artist in track_values, so the row projection has to
@@ -31,9 +31,9 @@ const TRACK_COLUMNS = `
   (SELECT vv.value FROM track_values tv JOIN values_ vv ON vv.id = tv.value_id
     WHERE tv.track_id = t.id AND tv.field_id = 1 ORDER BY tv.ordinal LIMIT 1) AS artist`
 
-type Handlers = { [C in Channel]: (...args: Parameters<AnthemApi[C]>) => ReturnType<AnthemApi[C]> }
+type Handlers = { [C in Channel]: (...args: Parameters<XMusicApi[C]>) => ReturnType<XMusicApi[C]> }
 
-function emit<E extends EventName>(name: E, payload: AnthemEvents[E]): void {
+function emit<E extends EventName>(name: E, payload: XMusicEvents[E]): void {
   for (const win of BrowserWindow.getAllWindows()) {
     win.webContents.send(EVENT_CHANNEL, { name, payload })
   }
@@ -47,7 +47,7 @@ export function registerIpc(db: DB): void {
   // player reports that plainly rather than failing at the first click.
   const playLog = logger('play')
   const mpvPath = findMpv()
-  if (!mpvPath) playLog.warn('mpv not found; playback is disabled', { hint: 'set ANTHEM_MPV' })
+  if (!mpvPath) playLog.warn('mpv not found; playback is disabled', { hint: 'set X_MUSIC_MPV' })
   else playLog.info('using mpv', { path: mpvPath })
 
   const player = new Player(
@@ -219,7 +219,7 @@ export function registerIpc(db: DB): void {
       return { logged: true }
     },
 
-    'app:logConfig': () => ({ spec: process.env.ANTHEM_LOG }),
+    'app:logConfig': () => ({ spec: process.env.X_MUSIC_LOG }),
 
     'tracks:details': (trackId) => trackDetails(db as never, trackId) as never,
 
@@ -229,7 +229,7 @@ export function registerIpc(db: DB): void {
       const path = req.size ? thumbnail(options, art, req.size) : art.path
 
       return {
-        url: path ? `anthem-art://local${encodeURI(path)}` : null,
+        url: path ? `x-music-art://local${encodeURI(path)}` : null,
         source: art.source
       }
     }) as never,

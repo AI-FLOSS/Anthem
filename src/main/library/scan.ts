@@ -207,7 +207,7 @@ export async function scanRoots(
         }
       }
 
-      // Tags are not authoritative for Anthem's own statistics.
+      // Tags are not authoritative for X-Music's own statistics.
       const result = upsert(track, media, { statistics: false, metadata: true })
       seen.add(result.mediaId)
       report.filesRead++

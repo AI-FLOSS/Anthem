@@ -269,7 +269,7 @@ export interface AppInfo {
 }
 
 /** Every channel the renderer may invoke, with its argument and result types. */
-export interface AnthemApi {
+export interface XMusicApi {
   'app:info': () => AppInfo
   'library:stats': () => LibraryStats
   'library:query': (req: QueryRequest) => TrackRow[]
@@ -303,7 +303,7 @@ export interface AnthemApi {
   }) => { logged: boolean }
   'app:logConfig': () => { spec: string | undefined }
   'tracks:details': (trackId: number) => TrackDetails | null
-  /** Resolves cover art lazily; returns an anthem-art:// url, or null when there is none. */
+  /** Resolves cover art lazily; returns an x-music-art:// url, or null when there is none. */
   'art:forTrack': (req: { trackId: number; size?: number }) =>
     { url: string | null; source: string }
   'art:rescan': () => { forgotten: number }
@@ -329,7 +329,7 @@ export interface AnthemApi {
 }
 
 /** Pushed from the main process; the renderer subscribes rather than polling. */
-export interface AnthemEvents {
+export interface XMusicEvents {
   'scan:progress': ScanProgress
   /** Batched, because one message per file would flood the bridge on a large library. */
   'scan:files': FileResult[]
@@ -339,8 +339,8 @@ export interface AnthemEvents {
   'player:position': { positionMs: number; durationMs: number | null }
 }
 
-export type EventName = keyof AnthemEvents
-export const EVENT_CHANNEL = 'anthem:event'
+export type EventName = keyof XMusicEvents
+export const EVENT_CHANNEL = 'x-music:event'
 
 /**
  * A value that structured clone rejects, such as a Proxy, cannot cross Electron's IPC boundary —
@@ -359,9 +359,9 @@ export function toCloneable(value: unknown): unknown {
   }
 }
 
-export type Channel = keyof AnthemApi
-export type ApiArgs<C extends Channel> = Parameters<AnthemApi[C]>
-export type ApiResult<C extends Channel> = ReturnType<AnthemApi[C]>
+export type Channel = keyof XMusicApi
+export type ApiArgs<C extends Channel> = Parameters<XMusicApi[C]>
+export type ApiResult<C extends Channel> = ReturnType<XMusicApi[C]>
 
 export const CHANNELS: readonly Channel[] = [
   'app:info', 'app:safety', 'library:stats', 'library:query', 'library:groupBy',

@@ -1,10 +1,10 @@
-import type { AnthemApi, AnthemEvents, Channel, EventName } from '../shared/ipc'
+import type { XMusicApi, XMusicEvents, Channel, EventName } from '../shared/ipc'
 
 declare global {
   interface Window {
-    anthem: { [C in Channel]: (...args: Parameters<AnthemApi[C]>) => Promise<ReturnType<AnthemApi[C]>> }
-    anthemEvents: {
-      on<E extends EventName>(name: E, handler: (payload: AnthemEvents[E]) => void): () => void
+    xMusic: { [C in Channel]: (...args: Parameters<XMusicApi[C]>) => Promise<ReturnType<XMusicApi[C]>> }
+    xMusicEvents: {
+      on<E extends EventName>(name: E, handler: (payload: XMusicEvents[E]) => void): () => void
     }
   }
 }
