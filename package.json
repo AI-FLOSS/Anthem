@@ -2,6 +2,7 @@
   "name": "anthem",
   "version": "0.1.0",
   "description": "A customizable music player with a real library engine",
+  "license": "GPL-3.0-or-later",
   "type": "module",
   "main": "./out/main/index.js",
   "scripts": {
