@@ -1,5 +1,7 @@
 # Anthem
 
+[![AI readiness](https://img.shields.io/endpoint?url=https://ai-floss.github.io/badges/AI-FLOSS/Anthem.json)](https://ai-floss.github.io/guidelines/readiness/)
+
 A desktop music player with gmusicbrowser's data model and power, a web-technology UI that users can
 re-layout and re-skin, and [Halon](https://github.com/BeatLink/Halon) as its reference theme.
 
@@ -141,3 +143,15 @@ src/
 `shared/` is where the leverage is. The filter AST, field descriptors, format-string engine and view
 state (selection, sort, filter stack, virtualization maths) are plain TypeScript with no framework
 primitives and no DOM access. Replacing the UI framework touches `renderer/` only.
+
+## Contributing
+
+Anthem is an [AI-FLOSS](https://ai-floss.github.io) project, and AI-assisted contributions are
+welcome. Read [AGENTS.md](AGENTS.md) and the
+[AI policy](https://github.com/AI-FLOSS/.github/blob/main/AI_POLICY.md), and say in your pull request
+how AI was involved.
+
+## Licence
+
+Anthem is free software, licensed under the [GNU General Public License](LICENSE), version 3 or (at
+your option) any later version.
