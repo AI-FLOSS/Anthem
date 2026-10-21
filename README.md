@@ -1,6 +1,6 @@
 # X-Music
 
-[![AI readiness](https://img.shields.io/endpoint?url=https://x-tech-laboratories.github.io/badges/x-tech-laboratories/Anthem.json)](https://x-tech-laboratories.github.io/guidelines/readiness/)
+[![AI readiness](https://img.shields.io/endpoint?url=https://x-tech-laboratories.github.io/badges/x-tech-laboratories/X-Music.json)](https://x-tech-laboratories.github.io/guidelines/readiness/)
 
 A desktop music player with gmusicbrowser's data model and power, a web-technology UI that users can
 re-layout and re-skin, and [Halon](https://github.com/BeatLink/Halon) as its reference theme.
