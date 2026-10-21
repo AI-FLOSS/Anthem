@@ -346,8 +346,10 @@ with different mechanisms:
 
 **The audio content hash** is computed over the audio stream with every metadata region excluded, so
 retagging a file never changes its hash. FLAC gets this free — its STREAMINFO block already carries
-an MD5 of the decoded audio. Tagged container formats get their frame region hashed with the ID3v2
-header, ID3v1 trailer and APE tag skipped. Anything else falls back to a whole-file hash, which is
+an MD5 of the decoded audio. MP4 gets its `mdat` payloads hashed, since tags live in `moov`. Ogg
+(Vorbis, Opus, Speex) gets its packets hashed with the comment packet left out — packets rather than
+pages, because a retag repaginates the stream. ID3/APE-tagged formats get their frame region hashed
+with the ID3v2 header, ID3v1 trailer and APE tag skipped. Anything else falls back to a whole-file hash, which is
 still stable under moves but not under retagging; the algorithm used is recorded per media row in
 `audio_hash_algo` so the weaker cases are visible rather than silently assumed.
 
@@ -1701,9 +1703,16 @@ The `pinned` flag is what de-risks the whole decision: a user merge or split wri
 the rescan never overrides it. That means the heuristic can be **changed after 1.0** without
 destroying user intent — which turns an irreversible schema decision into a tunable one.
 
-**Still open:** whether a remaster is the same album as the original by default. Proposal: **no** —
-different `year` means different album, with a one-click "merge these" in the album view. Splitting
-is a smaller annoyance than silently merging two masterings and computing one album gain across both.
+**A remaster is a different album by default** — different `year` means different album, with a
+one-click "merge these" in the album view. Splitting is a smaller annoyance than silently merging two
+masterings and computing one album gain across both.
+
+**Implemented** in `library/albums.ts`. Compilation detection needs every track of an album in view,
+so it runs as a regroup pass after each import and scan rather than per file; a track tagged as a
+compilation joins the compilation album at once. The same pass deletes album rows no track points
+at, except pinned ones and any an undoable merge would restore. Both the importer and the scanner
+key on the first artist in the tag with featured guests removed, so reading `A; B` whole or split
+lands on the same album.
 
 ### 17.2 CUE sheets — resolved by the entity model
 

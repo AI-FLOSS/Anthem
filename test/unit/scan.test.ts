@@ -71,6 +71,19 @@ describe('scanning', () => {
     expect(second.filesRead).toBe(0)
   })
 
+  it('rehashes an unchanged file that has no hash yet, as imported rows do', async () => {
+    await writeFile(join(dir, 'a.flac'), flac('0'.repeat(31) + '4', Buffer.alloc(512, 4)))
+    await scanRoots(db as never, [dir])
+    db.exec('UPDATE media SET audio_hash = NULL, audio_hash_algo = NULL')
+
+    const second = await scanRoots(db as never, [dir])
+    expect(second.filesRead).toBe(1)
+    expect(count('SELECT COUNT(*) AS n FROM media WHERE audio_hash IS NOT NULL')).toBe(1)
+
+    const third = await scanRoots(db as never, [dir])
+    expect(third.filesSkipped).toBe(1)
+  })
+
   it('recognises a renamed file as the same track, keeping its rating', async () => {
     const md5 = 'a'.repeat(32)
     await writeFile(join(dir, 'before.flac'), flac(md5, Buffer.alloc(512, 4)))
